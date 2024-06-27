@@ -1,5 +1,7 @@
 import React from "react";
 import { ITableData } from "../../types/Question";
+import { RxCross1 } from "react-icons/rx";
+import { FaCheck } from "react-icons/fa";
 
 interface IResultsTableProps {
     tableData: ITableData[];
@@ -16,7 +18,7 @@ const ResultsTable: React.FC<IResultsTableProps> = ({ tableData }) => {
                         <th className="px-4 py-2">Şıklar</th>
                         <th className="px-4 py-2">Cevabınız</th>
                         <th className="px-4 py-2">Doğru Cevap</th>
-                        <th className="px-4 py-2">Doğru / Yanlış</th>
+                        <th className="px-4 py-2">Doğru/Yanlış</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -28,8 +30,10 @@ const ResultsTable: React.FC<IResultsTableProps> = ({ tableData }) => {
                                 {element.selectedAnswer ?? "-"}
                             </td>
                             <td className="border px-4 py-2">{element.trueAnswer}</td>
-                            <td className={`border px-4 py-2 ${element.selectedAnswer === element.trueAnswer ? 'bg-green-100 text-green-600 font-bold' : 'bg-red-100 text-red-600'}`}>
-                                {element.selectedAnswer ?? "-"}
+                            <td className={`border px-4 py-2 text-center ${element.selectedAnswer === element.trueAnswer ? 'bg-green-100 text-green-600 font-bold' : 'bg-red-100 text-red-600'}`}>
+                                <div className="flex items-center justify-center h-full">
+                                    {element.selectedAnswer === element.trueAnswer ? <FaCheck /> : <RxCross1 />}
+                                </div>
                             </td>
                         </tr>
                     ))}
