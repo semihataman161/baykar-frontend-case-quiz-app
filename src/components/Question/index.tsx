@@ -1,19 +1,20 @@
 import React, { useState } from "react";
 import AnswerOption from "../AnswerOption";
 import { IQuestion } from "../../types/Question";
+import CountdownTimer from "../CountdownTimer";
 
 interface IQuestionProps {
     question: IQuestion;
-    timeLeft: number;
     canAnswer: boolean;
     handleAnswerSelect: (option: string) => void;
+    onCountdownComplete: () => void;
 }
 
 const Question: React.FC<IQuestionProps> = ({
     question,
-    timeLeft,
     canAnswer,
-    handleAnswerSelect
+    handleAnswerSelect,
+    onCountdownComplete
 }) => {
     const [selectedOption, setSelectedOption] = useState<string | null>(null);
 
@@ -39,7 +40,9 @@ const Question: React.FC<IQuestionProps> = ({
                 ))}
             </div>
             <div className="mt-4">
-                <p>Kalan süre: {timeLeft} saniye</p>
+                <CountdownTimer
+                    onCountdownComplete={onCountdownComplete}
+                />
             </div>
         </div>
     );

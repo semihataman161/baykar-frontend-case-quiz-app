@@ -2,21 +2,22 @@ import React, { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import Question from "../Question";
 import ResultsTable from "../ResultsTable";
-import useCountdown from "../../hooks/useCountdown";
+import { useCountdown } from 'react-countdown-circle-timer'
 import type { IQuestion, ITableData } from "../../types/Question";
 import type { IJsonPlaceHolderResponse } from "../../types/ApiResponse";
+import { TIME_PER_QUESTION, NUMBER_OF_QUESTIONS, DISABLE_DURATION } from "../../constants";
 
 const Quiz: React.FC = () => {
     const [questions, setQuestions] = useState<IQuestion[]>([]);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
     const [tableData, setTableData] = useState<ITableData[]>([]);
-    const TIME_PER_QUESTION = 30;
-    const { timeLeft, canAnswer, resetCountdown, resetTimeLeft } = useCountdown(TIME_PER_QUESTION);
+    const { elapsedTime } = useCountdown({ isPlaying: true, duration: TIME_PER_QUESTION * NUMBER_OF_QUESTIONS, colors: '#abc' });
+    const canAnswer = elapsedTime % TIME_PER_QUESTION > DISABLE_DURATION + 1;
 
     const fetchQuestions = useCallback(async () => {
         const response = await axios.get("https://jsonplaceholder.typicode.com/posts");
-        const data = response.data.slice(0, 10).map((item: IJsonPlaceHolderResponse, index: number) => ({
+        const data = response.data.slice(0, NUMBER_OF_QUESTIONS).map((item: IJsonPlaceHolderResponse, index: number) => ({
             question: `Soru ${index + 1}: ${item.title}`,
             options: [
                 'A. ' + item.body.slice(0, 20),
@@ -32,30 +33,6 @@ const Quiz: React.FC = () => {
         fetchQuestions();
     }, [fetchQuestions]);
 
-    useEffect(() => {
-        function getRandomNumber(): number {
-            return Math.floor(Math.random() * 4);
-        }
-
-        if (timeLeft === 0 && currentQuestionIndex < questions.length) {
-            const randomIndex = getRandomNumber();
-
-            setTableData(prevTableData => [
-                ...prevTableData,
-                {
-                    question: questions[currentQuestionIndex].question,
-                    options: questions[currentQuestionIndex].options,
-                    selectedAnswer: selectedAnswer,
-                    trueAnswer: questions[currentQuestionIndex].options[randomIndex]
-                },
-            ]);
-
-            setCurrentQuestionIndex(currentQuestionIndex + 1);
-            resetCountdown();
-            setSelectedAnswer(null);
-        }
-    }, [timeLeft, currentQuestionIndex, questions, selectedAnswer, tableData, resetCountdown]);
-
     const handleAnswerSelect = (option: string) => {
         if (canAnswer) {
             setSelectedAnswer(option);
@@ -67,7 +44,27 @@ const Quiz: React.FC = () => {
         setTableData([]);
         setSelectedAnswer(null);
         fetchQuestions();
-        resetTimeLeft();
+    };
+
+    const handleCountdownComplete = () => {
+        function getRandomNumber(): number {
+            return Math.floor(Math.random() * 4);
+        }
+
+        const randomIndex = getRandomNumber();
+
+        setTableData(prevTableData => [
+            ...prevTableData,
+            {
+                question: questions[currentQuestionIndex].question,
+                options: questions[currentQuestionIndex].options,
+                selectedAnswer: selectedAnswer,
+                trueAnswer: questions[currentQuestionIndex].options[randomIndex]
+            },
+        ]);
+
+        setCurrentQuestionIndex(prevIndex => prevIndex + 1);
+        setSelectedAnswer(null);
     };
 
     return (
@@ -75,9 +72,9 @@ const Quiz: React.FC = () => {
             {currentQuestionIndex < questions.length ? (
                 <Question
                     question={questions[currentQuestionIndex]}
-                    timeLeft={timeLeft}
                     canAnswer={canAnswer}
                     handleAnswerSelect={handleAnswerSelect}
+                    onCountdownComplete={handleCountdownComplete}
                 />
             ) : (
                 <div className="text-center">
