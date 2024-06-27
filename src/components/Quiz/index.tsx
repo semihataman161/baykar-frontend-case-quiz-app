@@ -37,20 +37,18 @@ const Quiz: React.FC = () => {
             return Math.floor(Math.random() * 4);
         }
 
-        if (timeLeft === 0) {
-            if (currentQuestionIndex < questions.length) {
-                const randomIndex = getRandomNumber();
+        if (timeLeft === 0 && currentQuestionIndex < questions.length) {
+            const randomIndex = getRandomNumber();
 
-                setTableData([
-                    ...tableData,
-                    {
-                        question: questions[currentQuestionIndex].question,
-                        options: questions[currentQuestionIndex].options,
-                        selectedAnswer: selectedAnswer,
-                        trueAnswer: questions[currentQuestionIndex].options[randomIndex]
-                    },
-                ]);
-            }
+            setTableData([
+                ...tableData,
+                {
+                    question: questions[currentQuestionIndex].question,
+                    options: questions[currentQuestionIndex].options,
+                    selectedAnswer: selectedAnswer,
+                    trueAnswer: questions[currentQuestionIndex].options[randomIndex]
+                },
+            ]);
 
             setCurrentQuestionIndex(currentQuestionIndex + 1);
             resetCountdown();
