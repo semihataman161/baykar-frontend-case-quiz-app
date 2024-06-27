@@ -40,8 +40,8 @@ const Quiz: React.FC = () => {
         if (timeLeft === 0 && currentQuestionIndex < questions.length) {
             const randomIndex = getRandomNumber();
 
-            setTableData([
-                ...tableData,
+            setTableData(prevTableData => [
+                ...prevTableData,
                 {
                     question: questions[currentQuestionIndex].question,
                     options: questions[currentQuestionIndex].options,
