@@ -3,9 +3,13 @@ import { CountdownCircleTimer } from "react-countdown-circle-timer";
 import "./styles.css";
 import { TIME_PER_QUESTION } from "../../constants";
 
-const renderTime = ({ remainingTime }) => {
+interface IRenderTimeProps {
+    remainingTime: number | null;
+}
+
+const renderTime: React.FC<IRenderTimeProps> = ({ remainingTime }) => {
     const currentTime = useRef(remainingTime);
-    const prevTime = useRef(null);
+    const prevTime = useRef<number | null>(null);
     const isNewTimeFirstTick = useRef(false);
     const [, setOneLastRerender] = useState(0);
 
